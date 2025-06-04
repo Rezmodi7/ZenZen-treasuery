@@ -38,5 +38,25 @@ const keys = { left: false, right: false, up: false };
 
 window.addEventListener("keydown", (e) => { if (e.code === "ArrowLeft") keys.left = true; if (e.code === "ArrowRight") keys.right = true; if (e.code === "ArrowUp" || e.code === "Space") keys.up = true; }); window.addEventListener("keyup", (e) => { if (e.code === "ArrowLeft") keys.left = false; if (e.code === "ArrowRight") keys.right = false; if (e.code === "ArrowUp" || e.code === "Space") keys.up = false; });
 
-// Touch Controls const leftBtn = document.getElementById("left-btn"); const rightBtn = document.getElementById("right-btn"); const jumpBtn = document
+// Touch Controls const leftBtn = document.getElementById("left-btn"); const rightBtn = document.getElementById("right-btn"); const jumpBtn = document.getElementById("jump-btn");
+
+leftBtn.addEventListener("touchstart", (e) => { e.preventDefault(); keys.left = true; }); leftBtn.addEventListener("touchend", (e) => { e.preventDefault(); keys.left = false; }); rightBtn.addEventListener("touchstart", (e) => { e.preventDefault(); keys.right = true; }); rightBtn.addEventListener("touchend", (e) => { e.preventDefault(); keys.right = false; }); jumpBtn.addEventListener("touchstart", (e) => { e.preventDefault(); keys.up = true; }); jumpBtn.addEventListener("touchend", (e) => { e.preventDefault(); keys.up = false; });
+
+function gameLoop() { ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+if (keys.left) player.moveLeft(); else if (keys.right) player.moveRight(); else player.stop();
+
+if (keys.up) { player.jump(); keys.up = false; }
+
+player.update(platforms);
+
+cameraX = player.x - 200; if (cameraX < 0) cameraX = 0;
+
+for (const platform of platforms) { platform.draw(); }
+
+player.draw();
+
+requestAnimationFrame(gameLoop); }
+
+gameLoop();
 
