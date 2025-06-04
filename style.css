@@ -1,0 +1,42 @@
+body {
+    margin: 0;
+    background: #282c34;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+#game-container {
+    position: relative;
+}
+
+#gameCanvas {
+    background: #a3d5f7;
+    border: 3px solid #333;
+    display: block;
+}
+
+#touch-controls {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#touch-controls button {
+    font-size: 1.5rem;
+    margin: 0 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: #444;
+    color: white;
+    user-select: none;
+}
+
+#touch-controls button:active {
+    background-color: #666;
+}
