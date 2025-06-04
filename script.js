@@ -16,24 +16,34 @@ class Player {
         this.isOnGround = false;
     }
 
-    update() {
-        // حرکت افقی
+    update(platforms) {
         this.x += this.vx;
-
-        // جاذبه
         this.vy += gravity;
         this.y += this.vy;
 
-        // برخورد با زمین
+        // Ground collision
+        this.isOnGround = false;
+        for (const platform of platforms) {
+            if (
+                this.y + this.height <= platform.y + this.vy &&
+                this.y + this.height + this.vy >= platform.y &&
+                this.x + this.width > platform.x &&
+                this.x < platform.x + platform.width
+            ) {
+                this.y = platform.y - this.height;
+                this.vy = 0;
+                this.isOnGround = true;
+            }
+        }
+
+        // Bottom floor
         if (this.y + this.height >= canvas.height - 10) {
             this.y = canvas.height - this.height - 10;
             this.vy = 0;
             this.isOnGround = true;
-        } else {
-            this.isOnGround = false;
         }
 
-        // جلوگیری از خروج از صفحه
+        // Boundary limits
         if (this.x < 0) this.x = 0;
         if (this.x + this.width > canvas.width) this.x = canvas.width - this.width;
     }
@@ -63,79 +73,20 @@ class Player {
     }
 }
 
-const player = new Player();
-
-const keys = {
-    left: false,
-    right: false,
-    up: false,
-};
-
-// کنترل‌های کیبورد
-window.addEventListener('keydown', e => {
-    if (e.code === 'ArrowLeft') keys.left = true;
-    if (e.code === 'ArrowRight') keys.right = true;
-    if (e.code === 'Space' || e.code === 'ArrowUp') keys.up = true;
-});
-
-window.addEventListener('keyup', e => {
-    if (e.code === 'ArrowLeft') keys.left = false;
-    if (e.code === 'ArrowRight') keys.right = false;
-    if (e.code === 'Space' || e.code === 'ArrowUp') keys.up = false;
-});
-
-// کنترل‌های لمسی
-const leftBtn = document.getElementById('left-btn');
-const rightBtn = document.getElementById('right-btn');
-const jumpBtn = document.getElementById('jump-btn');
-
-leftBtn.addEventListener('touchstart', e => {
-    e.preventDefault();
-    keys.left = true;
-});
-leftBtn.addEventListener('touchend', e => {
-    e.preventDefault();
-    keys.left = false;
-});
-
-rightBtn.addEventListener('touchstart', e => {
-    e.preventDefault();
-    keys.right = true;
-});
-rightBtn.addEventListener('touchend', e => {
-    e.preventDefault();
-    keys.right = false;
-});
-
-jumpBtn.addEventListener('touchstart', e => {
-    e.preventDefault();
-    keys.up = true;
-});
-jumpBtn.addEventListener('touchend', e => {
-    e.preventDefault();
-    keys.up = false;
-});
-
-function gameLoop() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // کنترل حرکت
-    if (keys.left) player.moveLeft();
-    else if (keys.right) player.moveRight();
-    else player.stop();
-
-    if (keys.up) {
-        player.jump();
-        keys.up = false;  // فقط یک بار پرش به ازای هر فشردن دکمه
+class Platform {
+    constructor(x, y, width, height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
     }
 
-    player.update();
-    player.draw();
-
-    requestAnimationFrame(gameLoop);
+    draw() {
+        ctx.fillStyle = '#654321';
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+    }
 }
 
-gameLoop();
 class Enemy {
     constructor(x, y, width, height, range) {
         this.x = x;
@@ -143,15 +94,14 @@ class Enemy {
         this.width = width;
         this.height = height;
         this.startX = x;
-        this.range = range; // مسافتی که دشمن حرکت میکند
+        this.range = range;
         this.speed = 2;
-        this.direction = 1; // 1 یعنی به راست، -1 به چپ
+        this.direction = 1;
     }
 
     update() {
         this.x += this.speed * this.direction;
 
-        // برگشت از محدوده حرکت
         if (this.x > this.startX + this.range) {
             this.direction = -1;
         } else if (this.x < this.startX) {
@@ -165,15 +115,21 @@ class Enemy {
     }
 }
 
-const enemies = [
-    new Enemy(220, 320, 40, 30, 100),  // روی اولین پلتفرم
-    new Enemy(500, 270, 40, 30, 150),  // روی دومین پلتفرم
+const player = new Player();
+
+const platforms = [
+    new Platform(200, 350, 150, 20),
+    new Platform(450, 300, 150, 20),
+    new Platform(650, 250, 100, 20),
 ];
 
-// اضافه کردن امتیاز اولیه
+const enemies = [
+    new Enemy(220, 320, 40, 30, 100),
+    new Enemy(500, 270, 40, 30, 150),
+];
+
 let score = 0;
 
-// تابع برای بررسی برخورد بازیکن با دشمن
 function checkPlayerEnemyCollision() {
     for (const enemy of enemies) {
         if (
@@ -182,15 +138,13 @@ function checkPlayerEnemyCollision() {
             player.y < enemy.y + enemy.height &&
             player.y + player.height > enemy.y
         ) {
-            // برخورد با دشمن
-            alert('بازیکن به دشمن برخورد کرد! بازی دوباره شروع می‌شود.');
+            alert('Player hit an enemy! Game will reset.');
             resetGame();
             break;
         }
     }
 }
 
-// تابع ریست بازی
 function resetGame() {
     player.x = 100;
     player.y = canvas.height - player.height - 10;
@@ -199,28 +153,77 @@ function resetGame() {
     score = 0;
 }
 
+const keys = {
+    left: false,
+    right: false,
+    up: false,
+};
+
+// Keyboard controls
+window.addEventListener('keydown', e => {
+    if (e.code === 'ArrowLeft') keys.left = true;
+    if (e.code === 'ArrowRight') keys.right = true;
+    if (e.code === 'Space' || e.code === 'ArrowUp') keys.up = true;
+});
+
+window.addEventListener('keyup', e => {
+    if (e.code === 'ArrowLeft') keys.left = false;
+    if (e.code === 'ArrowRight') keys.right = false;
+    if (e.code === 'Space' || e.code === 'ArrowUp') keys.up = false;
+});
+
+// Touch controls
+const leftBtn = document.getElementById('left-btn');
+const rightBtn = document.getElementById('right-btn');
+const jumpBtn = document.getElementById('jump-btn');
+
+leftBtn.addEventListener('touchstart', e => {
+    e.preventDefault();
+    keys.left = true;
+});
+leftBtn.addEventListener('touchend', e => {
+    e.preventDefault();
+    keys.left = false;
+});
+rightBtn.addEventListener('touchstart', e => {
+    e.preventDefault();
+    keys.right = true;
+});
+rightBtn.addEventListener('touchend', e => {
+    e.preventDefault();
+    keys.right = false;
+});
+jumpBtn.addEventListener('touchstart', e => {
+    e.preventDefault();
+    keys.up = true;
+});
+jumpBtn.addEventListener('touchend', e => {
+    e.preventDefault();
+    keys.up = false;
+});
+
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // رسم پلتفرم‌ها
+    // Draw platforms
     for (const platform of platforms) {
         platform.draw();
     }
 
-    // رسم دشمن‌ها
+    // Draw and update enemies
     for (const enemy of enemies) {
         enemy.update();
         enemy.draw();
     }
 
-    // کنترل حرکت
+    // Player controls
     if (keys.left) player.moveLeft();
     else if (keys.right) player.moveRight();
     else player.stop();
 
     if (keys.up) {
         player.jump();
-        keys.up = false;  // فقط یک بار پرش به ازای هر فشردن دکمه
+        keys.up = false;
     }
 
     player.update(platforms);
@@ -228,14 +231,12 @@ function gameLoop() {
 
     checkPlayerEnemyCollision();
 
-    // نمایش امتیاز (هنوز آیتم نداریم، پس صفر)
     ctx.fillStyle = 'black';
     ctx.font = '20px Arial';
-    ctx.fillText('امتیاز: ' + score, 10, 30);
+    ctx.fillText('Score: ' + score, 10, 30);
 
     requestAnimationFrame(gameLoop);
 }
 
 gameLoop();
-
-         
+        
