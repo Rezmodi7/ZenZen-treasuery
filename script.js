@@ -136,4 +136,106 @@ function gameLoop() {
 }
 
 gameLoop();
-      
+class Enemy {
+    constructor(x, y, width, height, range) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.startX = x;
+        this.range = range; // مسافتی که دشمن حرکت میکند
+        this.speed = 2;
+        this.direction = 1; // 1 یعنی به راست، -1 به چپ
+    }
+
+    update() {
+        this.x += this.speed * this.direction;
+
+        // برگشت از محدوده حرکت
+        if (this.x > this.startX + this.range) {
+            this.direction = -1;
+        } else if (this.x < this.startX) {
+            this.direction = 1;
+        }
+    }
+
+    draw() {
+        ctx.fillStyle = 'red';
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+    }
+}
+
+const enemies = [
+    new Enemy(220, 320, 40, 30, 100),  // روی اولین پلتفرم
+    new Enemy(500, 270, 40, 30, 150),  // روی دومین پلتفرم
+];
+
+// اضافه کردن امتیاز اولیه
+let score = 0;
+
+// تابع برای بررسی برخورد بازیکن با دشمن
+function checkPlayerEnemyCollision() {
+    for (const enemy of enemies) {
+        if (
+            player.x < enemy.x + enemy.width &&
+            player.x + player.width > enemy.x &&
+            player.y < enemy.y + enemy.height &&
+            player.y + player.height > enemy.y
+        ) {
+            // برخورد با دشمن
+            alert('بازیکن به دشمن برخورد کرد! بازی دوباره شروع می‌شود.');
+            resetGame();
+            break;
+        }
+    }
+}
+
+// تابع ریست بازی
+function resetGame() {
+    player.x = 100;
+    player.y = canvas.height - player.height - 10;
+    player.vx = 0;
+    player.vy = 0;
+    score = 0;
+}
+
+function gameLoop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // رسم پلتفرم‌ها
+    for (const platform of platforms) {
+        platform.draw();
+    }
+
+    // رسم دشمن‌ها
+    for (const enemy of enemies) {
+        enemy.update();
+        enemy.draw();
+    }
+
+    // کنترل حرکت
+    if (keys.left) player.moveLeft();
+    else if (keys.right) player.moveRight();
+    else player.stop();
+
+    if (keys.up) {
+        player.jump();
+        keys.up = false;  // فقط یک بار پرش به ازای هر فشردن دکمه
+    }
+
+    player.update(platforms);
+    player.draw();
+
+    checkPlayerEnemyCollision();
+
+    // نمایش امتیاز (هنوز آیتم نداریم، پس صفر)
+    ctx.fillStyle = 'black';
+    ctx.font = '20px Arial';
+    ctx.fillText('امتیاز: ' + score, 10, 30);
+
+    requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+
+         
