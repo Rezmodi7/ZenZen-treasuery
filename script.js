@@ -327,3 +327,13 @@ document.getElementById('jump-btn').addEventListener('touchstart', e => {
 document.getElementById('jump-btn').addEventListener('touchend', e => {
   e.preventDefault(); keys.up = false;
 });
+let currentLevel = 1;
+
+function loadLevel(levelNumber) {
+  const script = document.createElement('script');
+  script.src = `levels/level${levelNumber}.js`;
+  document.body.appendChild(script);
+}
+
+// وقتی بازی شروع میشه، اولین مرحله رو لود کن:
+loadLevel(currentLevel);
