@@ -1,65 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>ZenZen Game</title>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background-color: #87CEEB;
-            font-family: sans-serif;
-        }
-
-        canvas {
-            display: block;
-            background-color: #87CEEB;
-        }
-
-        .controls {
-            position: absolute;
-            bottom: 20px;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            padding: 0 20px;
-            pointer-events: none;
-        }
-
-        .controls .btn {
-            pointer-events: auto;
-            background-color: rgba(0,0,0,0.5);
-            border: none;
-            color: white;
-            padding: 20px;
-            font-size: 20px;
-            border-radius: 10px;
-        }
-
-        .left-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .right-buttons {
-            display: flex;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ZenZen: Quest for the Lost Zen Treasure</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <canvas id="gameCanvas" width="800" height="450"></canvas>
+  <div id="game-container">
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
 
-    <div class="controls">
-        <div class="left-buttons">
-            <button id="left-btn" class="btn">←</button>
-            <button id="right-btn" class="btn">→</button>
-        </div>
-        <div class="right-buttons">
-            <button id="jump-btn" class="btn">↑</button>
-        </div>
+    <!-- Touch Controls -->
+    <div id="controls">
+      <div class="left-controls">
+        <button id="left-btn">←</button>
+        <button id="right-btn">→</button>
+      </div>
+      <div class="right-controls">
+        <button id="jump-btn">↑</button>
+      </div>
     </div>
+  </div>
 
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
