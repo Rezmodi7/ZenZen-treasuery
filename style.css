@@ -1,54 +1,52 @@
 body {
-    margin: 0;
-    background: #282c34;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    font-family: Arial, sans-serif;
-    color: white;
+  margin: 0;
+  padding: 0;
+  background-color: #222;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: sans-serif;
 }
 
 #game-container {
-    position: relative;
+  position: relative;
 }
 
-#gameCanvas {
-    background: #a3d5f7;
-    border: 3px solid #333;
-    display: block;
+canvas {
+  border: 2px solid #fff;
+  background: linear-gradient(to top, #87ceeb, #d0f0ff);
+  display: block;
 }
 
-#touch-controls {
-    position: absolute;
-    bottom: 10px;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    padding: 0 20px;
-    box-sizing: border-box;
+/* Touch Controls */
+#controls {
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
 }
 
-#touch-controls .left-right {
-    display: flex;
-    gap: 10px;
+.left-controls, .right-controls {
+  display: flex;
+  gap: 10px;
+  pointer-events: auto;
+  padding: 0 20px;
 }
 
-#touch-controls button {
-    font-size: 1.5rem;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    background-color: #444;
-    color: white;
-    user-select: none;
+button {
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+  border: none;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+  cursor: pointer;
 }
 
-#touch-controls button:active {
-    background-color: #666;
-}
-
-
-#touch-controls button:active {
-    background-color: #666;
+button:active {
+  background-color: #ccc;
 }
